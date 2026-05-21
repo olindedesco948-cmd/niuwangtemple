@@ -1,0 +1,255 @@
+/* ===== Hero 区域 ===== */
+.hero-section {
+  position: relative;
+  width: 100%;
+  height: 900rpx;
+  border-radius: 0 0 24rpx 24rpx;
+  overflow: hidden;
+  margin-bottom: 24rpx;
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%);
+}
+
+/* 烟雾 */
+.smoke-container {
+  position: absolute;
+  bottom: 200rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40rpx;
+  height: 80rpx;
+  z-index: 2;
+}
+
+.smoke {
+  position: absolute;
+  bottom: 0;
+  width: 20rpx;
+  height: 20rpx;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  animation: smokeRise 3s ease-out infinite;
+}
+
+.smoke-1 {
+  left: 0;
+  animation-delay: 0s;
+}
+
+.smoke-2 {
+  left: 10rpx;
+  animation-delay: 1s;
+}
+
+.smoke-3 {
+  left: 20rpx;
+  animation-delay: 2s;
+}
+
+@keyframes smokeRise {
+  0% {
+    opacity: 0.6;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80rpx) scale(2);
+  }
+}
+
+/* ===== 状态卡片 ===== */
+.status-card {
+  border-left: 6rpx solid #ffd700;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.status-icon {
+  font-size: 48rpx;
+}
+
+.icon-fire { animation: fireFlicker 1s ease-in-out infinite alternate; }
+
+@keyframes fireFlicker {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.15); }
+}
+
+.status-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.status-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.status-desc {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ===== Hero 按钮区域 ===== */
+.hero-button-area {
+  position: absolute;
+  bottom: 40rpx;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 3;
+}
+
+.btn-hero {
+  background: linear-gradient(135deg, #c41e3a 0%, #8B2323 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50rpx;
+  padding: 24rpx 80rpx;
+  font-size: 34rpx;
+  font-weight: bold;
+  box-shadow: 0 4rpx 30rpx rgba(196, 30, 58, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+}
+
+.btn-hero:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+.btn-hero.disabled {
+  background: linear-gradient(135deg, #666 0%, #444 100%);
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+.btn-icon {
+  font-size: 36rpx;
+}
+
+/* ===== 祈福语卡片 ===== */
+.blessing-card {
+  text-align: center;
+  border-color: rgba(255, 215, 0, 0.4);
+  opacity: 0;
+  transform: translateY(20rpx);
+  transition: all 0.5s ease;
+}
+
+.blessing-card.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.blessing-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.blessing-icon {
+  font-size: 32rpx;
+}
+
+.blessing-label {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.blessing-text {
+  font-size: 32rpx;
+  color: #fff;
+  line-height: 1.6;
+  letter-spacing: 2rpx;
+}
+
+/* ===== 记录入口 ===== */
+.records-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20rpx;
+}
+
+.entry-left {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.entry-icon {
+  font-size: 44rpx;
+}
+
+.entry-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.entry-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+.entry-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.entry-arrow {
+  font-size: 40rpx;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ===== 时间提示 ===== */
+.time-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  margin-top: 30rpx;
+  padding: 16rpx;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12rpx;
+}
+
+.hint-icon {
+  font-size: 28rpx;
+}
+
+.hint-text {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
