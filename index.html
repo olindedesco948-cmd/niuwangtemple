@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>牛王庙</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      color: #f5f5f5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: 0 auto;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    /* ===== Hero 区域 ===== */
+    .hero-section {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      max-height: 900px;
+      overflow: hidden;
+    }
+
+    .hero-image {
+      width: 100%;
+      height: auto;
+      max-height: 100vh;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      object-fit: contain;
+    }
+
+    .hero-placeholder {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: linear-gradient(180deg, #2d1f1f 0%, #1a1a2e 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 0;
+    }
+
+    .placeholder-temple {
+      font-size: 120px;
+      margin-bottom: 20px;
+    }
+
+    .placeholder-title {
+      font-size: 48px;
+      color: #ffd700;
+      text-shadow: 0 4rpx 20px rgba(255, 215, 0, 0.5);
+      letter-spacing: 8px;
+    }
+
+    .placeholder-sub {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 12px;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+      z-index: 1;
+    }
+
+    /* 烟雾 */
+    .smoke-container {
+      position: absolute;
+      bottom: 200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 80px;
+      z-index: 2;
+      display: none;
+    }
+
+    .smoke-container.active {
+      display: block;
+    }
+
+    .smoke {
+      position: absolute;
+      bottom: 0;
+      width: 20px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      animation: smokeRise 3s ease-out infinite;
+    }
+
+    .smoke-1 { left: 0; animation-delay: 0s; }
+    .smoke-2 { left: 10px; animation-delay: 1s; }
+    .smoke-3 { left: 20px; animation-delay: 2s; }
+
+    @keyframes smokeRise {
+      0% { opacity: 0.6; transform: translateY(0) scale(1); }
+      50% { opacity: 0.3; }
+      100% { opacity: 0; transform: translateY(-80px) scale(2); }
+    }
+
+    /* Hero 按钮区域 */
+    .hero-button-area {
+      position: absolute;
+      bottom: 15%;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      z-index: 3;
+    }
+
+    .btn-hero {
+      background: linear-gradient(135deg, #c41e3a 0%, #8B2323 100%);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 18px 60px;
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: 0 4px 30px rgba(196, 30, 58, 0.5);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-hero:active {
+      transform: scale(0.96);
+      opacity: 0.9;
+    }
+
+    .btn-hero.disabled {
+      background: linear-gradient(135deg, #666 0%, #444 100%);
+      box-shadow: none;
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .btn-icon {
+      font-size: 20px;
+    }
+
+    /* 祈福人数统计 */
+    .blessing-counter {
+      position: absolute;
+      bottom: calc(15% - 60px);
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 3;
+      opacity: 0;
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .counter-label {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+    }
+
+    .counter-display {
+      position: relative;
+      height: 50px;
+      overflow: hidden;
+    }
+
+    .counter-numeral {
+      font-size: 36px;
+      font-weight: bold;
+      color: #ffd700;
+      text-shadow: 0 2px 10px rgba(255, 215, 0, 0.4);
+      font-family: 'Georgia', serif;
+      letter-spacing: 2px;
+    }
+
+    .counter-digit {
+      display: inline-block;
+      animation: countUp 0.6s ease-out forwards;
+    }
+
+    .counter-unit {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-left: 4px;
+    }
+
+    @keyframes countUp {
+      from {
+        opacity: 0;
+        transform: translateY(100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== 内容区域 ===== */
+    .content-area {
+      padding: 20px;
+      background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+    }
+
+    /* 状态卡片 */
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255, 215, 0, 0.2);
+    }
+
+    .status-card {
+      border-left: 4px solid #ffd700;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-icon {
+      font-size: 32px;
+    }
+
+    .icon-fire { animation: fireFlicker 1s ease-in-out infinite alternate; }
+
+    @keyframes fireFlicker {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.15); }
+    }
+
+    .status-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .status-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #ffd700;
+    }
+
+    .status-desc {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* 祈福语卡片 */
+    .blessing-card {
+      text-align: center;
+      border-color: rgba(255, 215, 0, 0.4);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s ease;
+      display: none;
+    }
+
+    .blessing-card.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .blessing-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .blessing-icon {
+      font-size: 20px;
+    }
+
+    .blessing-label {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .blessing-text {
+      font-size: 18px;
+      color: #fff;
+      line-height: 1.6;
+      letter-spacing: 2px;
+    }
+
+    /* 记录入口 */
+    .records-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .records-entry:active {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .entry-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .entry-icon {
+      font-size: 28px;
+    }
+
+    .entry-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .entry-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .entry-desc {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .entry-arrow {
+      font-size: 24px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* 时间提示 */
+    .time-hint {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+    }
+
+    .time-hint.show {
+      display: flex;
+    }
+
+    .hint-icon {
+      font-size: 16px;
+    }
+
+    .hint-text {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* 底部声明 */
+    .footer-disclaimer {
+      text-align: center;
+      padding: 30px 20px 50px;
+      font-size: 12px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* ===== 记录页面 ===== */
+    .page-records {
+      display: none;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+    }
+
+    .page-records.active {
+      display: block;
+    }
+
+    .page-main.hidden {
+      display: none;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: #ffd700;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .page-title {
+      font-size: 20px;
+      color: #ffd700;
+      margin-left: 12px;
+    }
+
+    .page-content {
+      padding: 20px;
+    }
+
+    /* 空状态 */
+    .empty-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 0;
+    }
+
+    .empty-state.show {
+      display: flex;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .empty-text {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 8px;
+    }
+
+    .empty-sub {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* 记录列表 */
+    .records-list {
+      display: none;
+    }
+
+    .records-list.show {
+      display: block;
+    }
+
+    .record-item {
+      border-left: 3px solid #ffd700;
+      margin-bottom: 16px;
+    }
+
+    .record-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .record-date-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .record-date {
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffd700;
+    }
+
+    .record-period {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 215, 0, 0.1);
+      padding: 2px 10px;
+      border-radius: 10px;
+    }
+
+    .record-time {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .record-blessing {
+      font-size: 15px;
+      color: #fff;
+      line-height: 1.5;
+    }
+
+    /* Toast 提示 */
+    .toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      padding: 20px 40px;
+      border-radius: 12px;
+      font-size: 16px;
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  </style>
+</head>
+<body>
+  <!-- 主页面 -->
+  <div class="container page-main" id="pageMain">
+    <!-- Hero 区域 -->
+    <div class="hero-section">
+      <div class="hero-placeholder" id="heroPlaceholder">
+        <div class="placeholder-temple">🏛️</div>
+        <div class="placeholder-title">牛王庙</div>
+        <div class="placeholder-sub">开盘前稳住心神，收盘后谢过市场</div>
+      </div>
+      <img class="hero-image" id="heroImage" src="牛王庙.jpg" alt="牛王庙">
+      <div class="hero-overlay"></div>
+      
+      <!-- 烟雾动画 -->
+      <div class="smoke-container" id="smokeContainer">
+        <div class="smoke smoke-1"></div>
+        <div class="smoke smoke-2"></div>
+        <div class="smoke smoke-3"></div>
+      </div>
+      
+      <!-- 主按钮 -->
+      <div class="hero-button-area">
+        <button class="btn-hero" id="btnIncense">
+          <span class="btn-icon" id="btnIcon">🙏</span>
+          <span id="btnText">点香祈福</span>
+        </button>
+      </div>
+
+      <!-- 祈福人数统计 -->
+      <div class="blessing-counter" id="blessingCounter">
+        <div class="counter-display">
+          <span class="counter-numeral" id="counterNumeral">0</span>
+          <span class="counter-unit">人已祈福</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="content-area">
+      <!-- 状态卡片 -->
+      <div class="card status-card">
+        <div class="status-row">
+          <div class="status-icon" id="statusIcon">🔥</div>
+          <div class="status-text">
+            <div class="status-title" id="statusTitle">今日香火正旺</div>
+            <div class="status-desc" id="statusDesc">宜开盘前祈福</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 祈福语 -->
+      <div class="card blessing-card" id="blessingCard">
+        <div class="blessing-header">
+          <span class="blessing-icon">📿</span>
+          <span class="blessing-label">今日祈福语</span>
+        </div>
+        <div class="blessing-text" id="blessingText">「愿今日心态比指数更稳」</div>
+      </div>
+
+      <!-- 记录入口 -->
+      <div class="card records-entry" id="recordsEntry">
+        <div class="entry-left">
+          <span class="entry-icon">📜</span>
+          <div class="entry-info">
+            <div class="entry-title">祈福记录</div>
+            <div class="entry-desc">查看近7日祈福</div>
+          </div>
+        </div>
+        <span class="entry-arrow">›</span>
+      </div>
+
+      <!-- 时间提示 -->
+      <div class="time-hint" id="timeHint">
+        <span class="hint-icon">⏰</span>
+        <span class="hint-text" id="hintText">下一个祈福时间：15:00 收盘后窗口</span>
+      </div>
+
+      <!-- 合规声明 -->
+      <div class="footer-disclaimer">
+        娱乐祈福，不构成投资建议
+      </div>
+    </div>
+  </div>
+
+  <!-- 记录页面 -->
+  <div class="container page-records" id="pageRecords">
+    <div class="page-header">
+      <button class="back-btn" id="backBtn">‹</button>
+      <span class="page-title">📿 祈福记录</span>
+    </div>
+    <div class="page-content">
+      <!-- 空状态 -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">🏛️</div>
+        <div class="empty-text">暂无祈福记录</div>
+        <div class="empty-sub">快去点一炷香吧</div>
+      </div>
+      <!-- 记录列表 -->
+      <div class="records-list" id="recordsList"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ===== 本地存储模拟 =====
+    const Storage = {
+      key: 'niuwangmiao_data',
+      
+      get(key) {
+        const data = localStorage.getItem(this.key);
+        if (!data) return null;
+        const obj = JSON.parse(data);
+        return key ? obj[key] : obj;
+      },
+      
+      set(key, value) {
+        const data = this.get() || {};
+        data[key] = value;
+        localStorage.setItem(this.key, JSON.stringify(data));
+      }
+    };
+
+    // ===== 祈福语列表 =====
+    const blessings = [
+      '愿今日心态比指数更稳',
+      '愿红盘常在，回撤有度',
+      '愿手别乱点，心别乱跳',
+      '愿看得懂趋势，也忍得住冲动',
+      '愿账户曲线平稳向上',
+      '愿买得安心，持有淡定',
+      '愿错过的不后悔，拿住的不焦虑',
+      '愿财不入急门，福不忘本心',
+      '愿每笔交易都有计划',
+      '愿大跌不慌，大涨不狂'
+    ];
+
+    // ===== 时段标签 =====
+    const periodLabels = {
+      morning: '开盘前',
+      evening: '收盘后'
+    };
+
+    // ===== 时间窗口配置 =====
+    const incenseWindows = {
+      morning: { start: '09:00', end: '09:30' },
+      evening: { start: '15:00', end: '22:00' }
+    };
+
+    // ===== 获取上海时间 =====
+    function getShanghaiTime() {
+      const now = new Date();
+      return new Date(now.getTime() + 8 * 60 * 60 * 1000);
+    }
+
+    // ===== 获取今日日期 =====
+    function getTodayDate() {
+      const now = getShanghaiTime();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // ===== 检查是否在祈福窗口 =====
+    function isInIncenseWindow() {
+      const now = getShanghaiTime();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const currentTime = `${hours}:${minutes}`;
+
+      if (currentTime >= incenseWindows.morning.start && currentTime <= incenseWindows.morning.end) {
+        return { inWindow: true, period: 'morning' };
+      }
+      if (currentTime >= incenseWindows.evening.start && currentTime <= incenseWindows.evening.end) {
+        return { inWindow: true, period: 'evening' };
+      }
+      return { inWindow: false, period: null };
+    }
+
+    // ===== 获取下一个祈福时间 =====
+    function getNextIncenseTime() {
+      const now = getShanghaiTime();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const currentMinutes = hours * 60 + minutes;
+
+      const morningStart = 9 * 60;
+      const morningEnd = 9 * 60 + 30;
+      const eveningStart = 15 * 60;
+      const eveningEnd = 22 * 60;
+
+      if (currentMinutes < morningStart) {
+        return { time: '09:00', label: '早间窗口' };
+      }
+      if (currentMinutes >= morningEnd && currentMinutes < eveningStart) {
+        return { time: '15:00', label: '收盘后窗口' };
+      }
+      if (currentMinutes >= eveningStart && currentMinutes < eveningEnd) {
+        return { time: '22:00', label: '收盘后窗口结束' };
+      }
+      return { time: '09:00', label: '早间窗口（明日）' };
+    }
+
+    // ===== 获取星期几 =====
+    function getWeekDay(dateStr) {
+      const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+      const date = new Date(dateStr);
+      return days[date.getDay()];
+    }
+
+    // ===== 显示 Toast =====
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    // ===== 初始化日期检查 =====
+    function initDayCheck() {
+      const today = getTodayDate();
+      const lastDate = Storage.get('lastRecordDate') || '';
+      if (lastDate !== today) {
+        Storage.set('isIncensedToday', false);
+        Storage.set('lastRecordDate', today);
+      }
+    }
+
+    // ===== 刷新状态 =====
+    function refreshStatus() {
+      initDayCheck();
+      
+      const windowStatus = isInIncenseWindow();
+      const isIncensedToday = Storage.get('isIncensedToday') || false;
+      const todayBlessing = Storage.get('todayBlessing') || '';
+      const nextTimeInfo = getNextIncenseTime();
+
+      const btnIncense = document.getElementById('btnIncense');
+      const btnText = document.getElementById('btnText');
+      const btnIcon = document.getElementById('btnIcon');
+      const statusIcon = document.getElementById('statusIcon');
+      const statusTitle = document.getElementById('statusTitle');
+      const statusDesc = document.getElementById('statusDesc');
+      const blessingCard = document.getElementById('blessingCard');
+      const blessingText = document.getElementById('blessingText');
+      const timeHint = document.getElementById('timeHint');
+      const hintText = document.getElementById('hintText');
+      const smokeContainer = document.getElementById('smokeContainer');
+
+      if (isIncensedToday) {
+        // 今日已上香
+        statusIcon.textContent = '✓';
+        statusTitle.textContent = '今日香火已燃';
+        statusDesc.textContent = '心意已到，明日再来';
+        btnText.textContent = '今日已上香';
+        btnIcon.textContent = '✨';
+        btnIncense.classList.add('disabled');
+        blessingCard.classList.add('show');
+        blessingText.textContent = `「${todayBlessing}」`;
+        timeHint.classList.remove('show');
+        smokeContainer.classList.add('active');
+      } else if (windowStatus.inWindow) {
+        // 可上香
+        statusIcon.textContent = '🔥';
+        statusTitle.textContent = '今日香火正旺';
+        statusDesc.textContent = `宜${periodLabels[windowStatus.period]}祈福`;
+        btnText.textContent = '点香祈福';
+        btnIcon.textContent = '🙏';
+        btnIncense.classList.remove('disabled');
+        blessingCard.classList.remove('show');
+        timeHint.classList.remove('show');
+        smokeContainer.classList.remove('active');
+      } else {
+        // 不可上香
+        statusIcon.textContent = '⏳';
+        statusTitle.textContent = '未到上香时辰';
+        statusDesc.textContent = '请在指定时段前来';
+        btnText.textContent = '未到上香时辰';
+        btnIcon.textContent = '🙏';
+        btnIncense.classList.add('disabled');
+        blessingCard.classList.remove('show');
+        timeHint.classList.add('show');
+        hintText.textContent = `下一个祈福时间：${nextTimeInfo.time} ${nextTimeInfo.label}`;
+        smokeContainer.classList.remove('active');
+      }
+    }
+
+    // ===== 点香 =====
+    function onIncense() {
+      const windowStatus = isInIncenseWindow();
+      const isIncensedToday = Storage.get('isIncensedToday') || false;
+
+      if (!windowStatus.inWindow || isIncensedToday) {
+        return;
+      }
+
+      // 随机祈福语
+      const randomIndex = Math.floor(Math.random() * blessings.length);
+      const blessing = blessings[randomIndex];
+      const period = periodLabels[windowStatus.period];
+
+      // 保存记录
+      const today = getTodayDate();
+      const now = getShanghaiTime();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      Storage.set('isIncensedToday', true);
+      Storage.set('todayBlessing', blessing);
+      Storage.set('blessingPeriod', period);
+      Storage.set('lastRecordDate', today);
+      Storage.set('lastIncenseTime', timeStr);
+
+      // 更新历史记录
+      const records = Storage.get('incenseRecords') || [];
+      records.unshift({ date: today, time: timeStr, period, blessing });
+      Storage.set('incenseRecords', records.slice(0, 7));
+
+      // 增加祈福人数
+      let totalBlessings = Storage.get('totalBlessings') || 0;
+      Storage.set('totalBlessings', totalBlessings + 1);
+
+      // 刷新UI
+      refreshStatus();
+      showToast('祈福成功！');
+    }
+
+    // ===== 加载记录列表 =====
+    function loadRecords() {
+      const records = Storage.get('incenseRecords') || [];
+      const emptyState = document.getElementById('emptyState');
+      const recordsList = document.getElementById('recordsList');
+
+      if (records.length === 0) {
+        emptyState.classList.add('show');
+        recordsList.classList.remove('show');
+        return;
+      }
+
+      emptyState.classList.remove('show');
+      recordsList.classList.add('show');
+
+      const html = records.map(record => {
+        const dateParts = record.date.split('-');
+        const month = parseInt(dateParts[1]);
+        const day = parseInt(dateParts[2]);
+        const weekDay = getWeekDay(record.date);
+        
+        return `
+          <div class="card record-item">
+            <div class="record-header">
+              <div class="record-date-info">
+                <span class="record-date">${month}月${day}日 ${weekDay}</span>
+                <span class="record-period">${record.period}</span>
+              </div>
+              <span class="record-time">${record.time}</span>
+            </div>
+            <div class="record-blessing">「${record.blessing}」</div>
+          </div>
+        `;
+      }).join('');
+
+      recordsList.innerHTML = html;
+    }
+
+    // ===== 页面切换 =====
+    function showRecords() {
+      loadRecords();
+      document.getElementById('pageMain').classList.add('hidden');
+      document.getElementById('pageRecords').classList.add('active');
+    }
+
+    function showMain() {
+      refreshStatus();
+      document.getElementById('pageMain').classList.remove('hidden');
+      document.getElementById('pageRecords').classList.remove('active');
+    }
+
+    // ===== 祈福人数计数器 =====
+    function initBlessingCounter() {
+      // 模拟已有祈福人数（从localStorage获取或默认）
+      let totalCount = Storage.get('totalBlessings') || Math.floor(Math.random() * 50) + 10;
+
+      const counterEl = document.getElementById('counterNumeral');
+      let displayedCount = 0;
+      const targetCount = totalCount;
+
+      // 初始显示
+      counterEl.textContent = displayedCount;
+
+      // 动画增长
+      function animateCount() {
+        if (displayedCount < targetCount) {
+          displayedCount++;
+          counterEl.textContent = displayedCount;
+          counterEl.style.animation = 'none';
+          counterEl.offsetHeight; // 触发重绘
+          counterEl.style.animation = 'countUp 0.1s ease-out';
+          setTimeout(animateCount, 20);
+        }
+      }
+
+      // 延迟启动动画
+      setTimeout(animateCount, 500);
+    }
+
+    // ===== 初始化 =====
+    document.addEventListener('DOMContentLoaded', function() {
+      refreshStatus();
+      initBlessingCounter();
+
+      // 图片加载处理
+      const heroImage = document.getElementById('heroImage');
+      const heroPlaceholder = document.getElementById('heroPlaceholder');
+      
+      if (heroImage.complete && heroImage.naturalWidth > 0) {
+        // 图片已缓存
+        heroImage.style.display = 'block';
+        heroPlaceholder.style.display = 'none';
+      } else {
+        heroImage.addEventListener('load', function() {
+          heroImage.style.display = 'block';
+          heroPlaceholder.style.display = 'none';
+        });
+        
+        heroImage.addEventListener('error', function() {
+          heroImage.style.display = 'none';
+          heroPlaceholder.style.display = 'flex';
+        });
+      }
+
+      // 点香按钮
+      document.getElementById('btnIncense').addEventListener('click', onIncense);
+
+      // 记录入口
+      document.getElementById('recordsEntry').addEventListener('click', showRecords);
+
+      // 返回按钮
+      document.getElementById('backBtn').addEventListener('click', showMain);
+    });
+  </script>
+</body>
+</html>

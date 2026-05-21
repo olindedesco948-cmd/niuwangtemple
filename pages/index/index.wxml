@@ -1,0 +1,71 @@
+<view class="container">
+  <!-- Hero 主图区域 -->
+  <view class="hero-section">
+    <image class="hero-image" src="{{heroImage}}" mode="aspectFill" binderror="onHeroImageError"></image>
+    <view class="hero-overlay"></view>
+    <!-- 烟雾动画 -->
+    <view class="smoke-container" wx:if="{{isIncensed}}">
+      <view class="smoke smoke-1"></view>
+      <view class="smoke smoke-2"></view>
+      <view class="smoke smoke-3"></view>
+    </view>
+    <!-- 主按钮覆盖在图片底部 -->
+    <view class="hero-button-area">
+      <button 
+        class="btn-hero {{!canIncense || isIncensedToday ? 'disabled' : ''}}" 
+        bindtap="onIncenseTap"
+        disabled="{{!canIncense || isIncensedToday}}">
+        <text wx:if="{{isIncensedToday}}" class="btn-icon">✨</text>
+        <text wx:else class="btn-icon">🙏</text>
+        <text>{{mainButtonText}}</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 状态卡片 -->
+  <view class="status-card card">
+    <view class="status-row">
+      <view class="status-icon">
+        <text wx:if="{{canIncense && !isIncensedToday}}" class="icon-fire">🔥</text>
+        <text wx:elif="{{isIncensedToday}}" class="icon-check">✓</text>
+        <text wx:else class="icon-wait">⏳</text>
+      </view>
+      <view class="status-text">
+        <text class="status-title">{{statusTitle}}</text>
+        <text class="status-desc">{{statusDesc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 祈福语展示（已上香后显示） -->
+  <view class="blessing-card card {{showBlessing ? 'show' : ''}}" wx:if="{{isIncensedToday}}">
+    <view class="blessing-header">
+      <text class="blessing-icon">📿</text>
+      <text class="blessing-label">今日祈福语</text>
+    </view>
+    <text class="blessing-text">「{{todayBlessing}}」</text>
+  </view>
+
+  <!-- 记录入口 -->
+  <view class="records-entry card" bindtap="goToRecords">
+    <view class="entry-left">
+      <text class="entry-icon">📜</text>
+      <view class="entry-info">
+        <text class="entry-title">祈福记录</text>
+        <text class="entry-desc">查看近7日祈福</text>
+      </view>
+    </view>
+    <text class="entry-arrow">›</text>
+  </view>
+
+  <!-- 时间窗口提示 -->
+  <view class="time-hint" wx:if="{{!canIncense && !isIncensedToday}}">
+    <text class="hint-icon">⏰</text>
+    <text class="hint-text">下一个祈福时间：{{nextTime}} {{nextPeriod}}</text>
+  </view>
+
+  <!-- 合规声明 -->
+  <view class="footer-disclaimer">
+    <text>娱乐祈福，不构成投资建议</text>
+  </view>
+</view>

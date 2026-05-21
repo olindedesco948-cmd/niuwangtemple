@@ -1,0 +1,7 @@
+{
+  "desc": "牛王庙小程序",
+  "rules": [{
+    "action": "allow",
+    "page": "*"
+  }]
+}

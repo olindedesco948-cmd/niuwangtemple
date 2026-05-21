@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>牛王庙 - Hero 图生成</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      background: #1a1a2e;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+      padding: 20px;
+    }
+    
+    .hero-container {
+      width: 750px;
+      height: 420px;
+      max-width: 100%;
+      background: linear-gradient(180deg, #2d1f1f 0%, #1a1a2e 100%);
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* K线背景装饰 */
+    .kline-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0.15;
+      background-image: 
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 30px,
+          rgba(0, 200, 83, 0.3) 30px,
+          rgba(0, 200, 83, 0.3) 32px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 20px,
+          rgba(255, 82, 82, 0.3) 20px,
+          rgba(255, 82, 82, 0.3) 22px
+        );
+    }
+    
+    /* 庙顶 */
+    .temple-roof {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-top: 80px solid #8B2323;
+      z-index: 3;
+    }
+    
+    .temple-roof::after {
+      content: '';
+      position: absolute;
+      top: -80px;
+      left: -130px;
+      width: 0;
+      height: 0;
+      border-left: 130px solid transparent;
+      border-right: 130px solid transparent;
+      border-top: 65px solid #a52a2a;
+    }
+    
+    /* 庙顶装饰 */
+    .roof-decor {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+      font-size: 28px;
+    }
+    
+    /* 庙身 */
+    .temple-body {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 120px;
+      background: linear-gradient(180deg, #4a3728 0%, #3d2e22 100%);
+      border-radius: 8px 8px 0 0;
+      border: 3px solid #5d4632;
+      border-bottom: none;
+    }
+    
+    .temple-body::before {
+      content: '🙏';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+    }
+    
+    /* 金牛 */
+    .golden-ox {
+      position: absolute;
+      top: 120px;
+      right: 60px;
+      font-size: 80px;
+      z-index: 2;
+      filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+      animation: oxGlow 2s ease-in-out infinite;
+    }
+    
+    @keyframes oxGlow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6)); }
+      50% { filter: drop-shadow(0 0 35px rgba(255, 215, 0, 1)); }
+    }
+    
+    /* 香炉 */
+    .incense-burner {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 64px;
+      z-index: 2;
+    }
+    
+    /* 烟雾 */
+    .smoke-container {
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 80px;
+    }
+    
+    .smoke {
+      position: absolute;
+      bottom: 0;
+      width: 20px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      animation: smokeRise 3s ease-out infinite;
+    }
+    
+    .smoke-1 { left: 0; animation-delay: 0s; }
+    .smoke-2 { left: 10px; animation-delay: 1s; }
+    .smoke-3 { left: 20px; animation-delay: 2s; }
+    
+    @keyframes smokeRise {
+      0% { opacity: 0.6; transform: translateY(0) scale(1); }
+      50% { opacity: 0.3; }
+      100% { opacity: 0; transform: translateY(-80px) scale(2); }
+    }
+    
+    /* 底部文字 */
+    .hero-title {
+      position: absolute;
+      bottom: 130px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 48px;
+      font-weight: bold;
+      color: #ffd700;
+      text-shadow: 0 4px 20px rgba(255, 215, 0, 0.5);
+      letter-spacing: 8px;
+      z-index: 5;
+    }
+    
+    .hero-subtitle {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 22px;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 2px;
+      z-index: 5;
+      white-space: nowrap;
+    }
+    
+    /* 说明 */
+    .instructions {
+      margin-top: 30px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      text-align: center;
+      max-width: 600px;
+    }
+    
+    .instructions h3 {
+      color: #ffd700;
+      margin-bottom: 10px;
+    }
+    
+    .instructions ol {
+      text-align: left;
+      margin-left: 20px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero-container">
+    <div class="kline-bg"></div>
+    <div class="temple-roof"></div>
+    <div class="roof-decor">🏮</div>
+    <div class="temple-body"></div>
+    <div class="golden-ox">🐂</div>
+    <div class="incense-burner">🏺</div>
+    <div class="smoke-container">
+      <div class="smoke smoke-1"></div>
+      <div class="smoke smoke-2"></div>
+      <div class="smoke smoke-3"></div>
+    </div>
+    <div class="hero-title">牛王庙</div>
+    <div class="hero-subtitle">开盘前稳住心神，收盘后谢过市场</div>
+  </div>
+  
+  <div class="instructions">
+    <h3>📸 生成步骤</h3>
+    <ol>
+      <li>在此窗口上右键</li>
+      <li>选择「图片另存为」或「截图」</li>
+      <li>保存为 PNG 格式</li>
+      <li>重命名为 <code>niu-wang-miao-hero.png</code></li>
+      <li>放入 <code>assets/images/</code> 目录</li>
+    </ol>
+  </div>
+</body>
+</html>
