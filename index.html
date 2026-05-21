@@ -600,7 +600,7 @@
           <div class="status-icon" id="statusIcon">🔥</div>
           <div class="status-text">
             <div class="status-title" id="statusTitle">今日香火正旺</div>
-            <div class="status-desc" id="statusDesc">宜开盘前祈福</div>
+            <div class="status-desc" id="statusDesc">今日可上3柱香</div>
           </div>
         </div>
       </div>
@@ -628,8 +628,8 @@
 
       <!-- 时间提示 -->
       <div class="time-hint" id="timeHint">
-        <span class="hint-icon">⏰</span>
-        <span class="hint-text" id="hintText">下一个祈福时间：15:00 收盘后窗口</span>
+        <span class="hint-icon">🏮</span>
+        <span class="hint-text" id="hintText">全天开放祈福，每日可上三柱香</span>
       </div>
 
       <!-- 合规声明 -->
@@ -693,17 +693,8 @@
       '愿大跌不慌，大涨不狂'
     ];
 
-    // ===== 时段标签 =====
-    const periodLabels = {
-      morning: '开盘前',
-      evening: '收盘后'
-    };
-
-    // ===== 时间窗口配置 =====
-    const incenseWindows = {
-      morning: { start: '09:00', end: '09:30' },
-      evening: { start: '15:00', end: '22:00' }
-    };
+    // ===== 每日上香上限 =====
+    const DAILY_INCENSE_LIMIT = 3;
 
     // ===== 获取上海时间 =====
     function getShanghaiTime() {
@@ -720,44 +711,14 @@
       return `${year}-${month}-${day}`;
     }
 
-    // ===== 检查是否在祈福窗口 =====
-    function isInIncenseWindow() {
-      const now = getShanghaiTime();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const currentTime = `${hours}:${minutes}`;
-
-      if (currentTime >= incenseWindows.morning.start && currentTime <= incenseWindows.morning.end) {
-        return { inWindow: true, period: 'morning' };
-      }
-      if (currentTime >= incenseWindows.evening.start && currentTime <= incenseWindows.evening.end) {
-        return { inWindow: true, period: 'evening' };
-      }
-      return { inWindow: false, period: null };
+    // ===== 获取今日已上香次数 =====
+    function getTodayIncenseCount() {
+      return Storage.get('incenseCountToday') || 0;
     }
 
-    // ===== 获取下一个祈福时间 =====
-    function getNextIncenseTime() {
-      const now = getShanghaiTime();
-      const hours = now.getHours();
-      const minutes = now.getMinutes();
-      const currentMinutes = hours * 60 + minutes;
-
-      const morningStart = 9 * 60;
-      const morningEnd = 9 * 60 + 30;
-      const eveningStart = 15 * 60;
-      const eveningEnd = 22 * 60;
-
-      if (currentMinutes < morningStart) {
-        return { time: '09:00', label: '早间窗口' };
-      }
-      if (currentMinutes >= morningEnd && currentMinutes < eveningStart) {
-        return { time: '15:00', label: '收盘后窗口' };
-      }
-      if (currentMinutes >= eveningStart && currentMinutes < eveningEnd) {
-        return { time: '22:00', label: '收盘后窗口结束' };
-      }
-      return { time: '09:00', label: '早间窗口（明日）' };
+    // ===== 还能上几柱香 =====
+    function getRemainingIncense() {
+      return DAILY_INCENSE_LIMIT - getTodayIncenseCount();
     }
 
     // ===== 获取星期几 =====
@@ -782,8 +743,9 @@
       const today = getTodayDate();
       const lastDate = Storage.get('lastRecordDate') || '';
       if (lastDate !== today) {
-        Storage.set('isIncensedToday', false);
+        Storage.set('incenseCountToday', 0);
         Storage.set('lastRecordDate', today);
+        Storage.set('todayBlessings', []);
       }
     }
 
@@ -791,10 +753,9 @@
     function refreshStatus() {
       initDayCheck();
       
-      const windowStatus = isInIncenseWindow();
-      const isIncensedToday = Storage.get('isIncensedToday') || false;
-      const todayBlessing = Storage.get('todayBlessing') || '';
-      const nextTimeInfo = getNextIncenseTime();
+      const count = getTodayIncenseCount();
+      const remaining = getRemainingIncense();
+      const todayBlessings = Storage.get('todayBlessings') || [];
 
       const btnIncense = document.getElementById('btnIncense');
       const btnText = document.getElementById('btnText');
@@ -805,76 +766,74 @@
       const blessingCard = document.getElementById('blessingCard');
       const blessingText = document.getElementById('blessingText');
       const timeHint = document.getElementById('timeHint');
-      const hintText = document.getElementById('hintText');
       const smokeContainer = document.getElementById('smokeContainer');
 
-      if (isIncensedToday) {
-        // 今日已上香
+      if (remaining <= 0) {
+        // 今日3柱香已用完
         statusIcon.textContent = '✓';
-        statusTitle.textContent = '今日香火已燃';
-        statusDesc.textContent = '心意已到，明日再来';
-        btnText.textContent = '今日已上香';
+        statusTitle.textContent = '今日香火已满';
+        statusDesc.textContent = '三柱清香已燃，明日再来';
+        btnText.textContent = '今日已上3柱香';
         btnIcon.textContent = '✨';
         btnIncense.classList.add('disabled');
         blessingCard.classList.add('show');
-        blessingText.textContent = `「${todayBlessing}」`;
+        blessingText.innerHTML = todayBlessings.map(b => `「${b}」`).join('<br>');
         timeHint.classList.remove('show');
         smokeContainer.classList.add('active');
-      } else if (windowStatus.inWindow) {
-        // 可上香
+      } else {
+        // 可以上香
         statusIcon.textContent = '🔥';
         statusTitle.textContent = '今日香火正旺';
-        statusDesc.textContent = `宜${periodLabels[windowStatus.period]}祈福`;
-        btnText.textContent = '点香祈福';
+        statusDesc.textContent = `今日还可上${remaining}柱香`;
+        btnText.textContent = count > 0 ? `再上一柱香（${remaining}/${DAILY_INCENSE_LIMIT}）` : '点香祈福';
         btnIcon.textContent = '🙏';
         btnIncense.classList.remove('disabled');
-        blessingCard.classList.remove('show');
+        if (todayBlessings.length > 0) {
+          blessingCard.classList.add('show');
+          blessingText.innerHTML = todayBlessings.map(b => `「${b}」`).join('<br>');
+        } else {
+          blessingCard.classList.remove('show');
+        }
         timeHint.classList.remove('show');
-        smokeContainer.classList.remove('active');
-      } else {
-        // 不可上香
-        statusIcon.textContent = '⏳';
-        statusTitle.textContent = '未到上香时辰';
-        statusDesc.textContent = '请在指定时段前来';
-        btnText.textContent = '未到上香时辰';
-        btnIcon.textContent = '🙏';
-        btnIncense.classList.add('disabled');
-        blessingCard.classList.remove('show');
-        timeHint.classList.add('show');
-        hintText.textContent = `下一个祈福时间：${nextTimeInfo.time} ${nextTimeInfo.label}`;
-        smokeContainer.classList.remove('active');
+        if (count > 0) {
+          smokeContainer.classList.add('active');
+        } else {
+          smokeContainer.classList.remove('active');
+        }
       }
     }
 
     // ===== 点香 =====
     function onIncense() {
-      const windowStatus = isInIncenseWindow();
-      const isIncensedToday = Storage.get('isIncensedToday') || false;
-
-      if (!windowStatus.inWindow || isIncensedToday) {
+      const remaining = getRemainingIncense();
+      if (remaining <= 0) {
         return;
       }
 
       // 随机祈福语
       const randomIndex = Math.floor(Math.random() * blessings.length);
       const blessing = blessings[randomIndex];
-      const period = periodLabels[windowStatus.period];
 
       // 保存记录
       const today = getTodayDate();
       const now = getShanghaiTime();
       const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const incenseNum = getTodayIncenseCount() + 1;
+      const periodLabel = `第${incenseNum}柱香`;
 
-      Storage.set('isIncensedToday', true);
-      Storage.set('todayBlessing', blessing);
-      Storage.set('blessingPeriod', period);
+      // 更新今日上香计数
+      Storage.set('incenseCountToday', incenseNum);
       Storage.set('lastRecordDate', today);
-      Storage.set('lastIncenseTime', timeStr);
+
+      // 更新今日祈福语列表
+      const todayBlessings = Storage.get('todayBlessings') || [];
+      todayBlessings.push(blessing);
+      Storage.set('todayBlessings', todayBlessings);
 
       // 更新历史记录
       const records = Storage.get('incenseRecords') || [];
-      records.unshift({ date: today, time: timeStr, period, blessing });
-      Storage.set('incenseRecords', records.slice(0, 7));
+      records.unshift({ date: today, time: timeStr, period: periodLabel, blessing });
+      Storage.set('incenseRecords', records.slice(0, 21)); // 保留7天x3柱=21条
 
       // 增加祈福人数
       let totalBlessings = Storage.get('totalBlessings') || 0;
@@ -882,7 +841,7 @@
 
       // 刷新UI
       refreshStatus();
-      showToast('祈福成功！');
+      showToast(`祈福成功！第${incenseNum}柱香已燃`);
     }
 
     // ===== 加载记录列表 =====
